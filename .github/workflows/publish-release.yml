@@ -1,0 +1,53 @@
+name: Publish NPM Package
+
+permissions:
+  contents: read
+
+# only run on tags matching "v*.*.*"
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    name: Publish @bussin/utilities
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js & authenticate to npmjs.org
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+          scope: '@bussin'
+          always-auth: true
+
+      - name: Install dependencies & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Test
+        run: |
+          npm run test
+
+      - name: Read version from Git tag
+        id: extract-version
+        run: |
+          # Strip leading “v” from the Git tag (e.g. “v1.2.3” → “1.2.3”)
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Bump package.json version (no new Git commit) # This should already be done, but do it again to be safe
+        run: |
+          npm version "${{ steps.extract-version.outputs.VERSION }}" --no-git-tag-version --allow-same-version
+
+      - name: Publish to npm
+        run: |
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
