@@ -24,4 +24,4 @@ const obj: JsonObject = {
 
 ## Support
 
-Please create a PR if you find any missing functionality that you's like to add. For bugs, please use the [issues tracker](https://github.com/wesleythorsen1/list-comprehensions/issues). I'll be happy to help you!
+Please create a PR if you find any missing functionality that you's like to add. For bugs, please use the [issues tracker](https://github.com/wesleythorsen1/utilities/issues). I'll be happy to help you!
