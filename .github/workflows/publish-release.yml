@@ -1,32 +1,31 @@
-name: Publish NPM Package
+name: Release & Publish
 
-permissions:
-  contents: read
-
-# only run on tags matching "v*.*.*"
 on:
   push:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+
 jobs:
-  publish:
-    name: Publish @bussin/utilities
+  create_draft_release:
+    name: Build & Create Draft Release
     runs-on: ubuntu-latest
+
+    outputs:
+      release_id: ${{ steps.draft_release.outputs.id }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js & authenticate to npmjs.org
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
-          scope: '@bussin'
-          always-auth: true
 
-      - name: Install dependencies & build
+      - name: Install dependencies and build
         run: |
           npm ci
           npm run build
@@ -35,19 +34,61 @@ jobs:
         run: |
           npm run test
 
-      - name: Read version from Git tag
-        id: extract-version
-        run: |
-          # Strip leading “v” from the Git tag (e.g. “v1.2.3” → “1.2.3”)
-          VERSION="${GITHUB_REF#refs/tags/v}"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-artifacts
+          path: |
+            dist-cjs
+            dist-es
+            dist-types
+            LICENSE
+            package-lock.json
+            package.json
+            README.md
 
-      - name: Bump package.json version (no new Git commit) # This should already be done, but do it again to be safe
-        run: |
-          npm version "${{ steps.extract-version.outputs.VERSION }}" --no-git-tag-version --allow-same-version
+      - name: Create draft GitHub Release
+        id: draft_release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          append_body: false
+          body: 'Awaiting approval: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
 
-      - name: Publish to npm
+  approve_and_publish:
+    name: Publish to NPM
+    needs: create_draft_release
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-artifacts
+          path: ./
+
+      - name: Set up Node.js & NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+          scope: '@bussin'
+          always-auth: true
+
+      - name: Publish to NPM
         run: |
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish GitHub Release
+        id: publish_release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          append_body: false
+          body: |
+            Package release complete!
+            Approved: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
