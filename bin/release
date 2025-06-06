@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+error() {
+  echo "Error: $*" >&2
+}
+
+set -euo pipefail
+
+# usage: ./bin/release 1.2.3[-beta]
+if [ $# -ne 1 ]; then
+  error "Missing required argument"
+  echo "Usage: $0 <version>"
+  echo "Example: $0 1.2.3"
+  echo "Example: $0 1.2.3-beta"
+  exit 1
+fi
+
+VERSION=$1
+
+# ensure working tree is clean
+if [ -n "$(git status --porcelain)" ]; then
+  error "Working directory is not clean. Commit or stash changes first."
+  exit 1
+fi
+
+# always return to original branch (on success or error)
+original_branch=$(git rev-parse --abbrev-ref HEAD)
+trap 'git checkout "$original_branch" &>/dev/null || true' EXIT SIGINT SIGTERM
+
+# create new branch for release
+release_branch="release/$VERSION"
+git checkout -b "$release_branch"
+
+# bump package.json version + create git commit and tag
+npm version "$VERSION"
+
+# push the new branch and tag to origin
+git push -u origin "$release_branch" --tags
+# git push origin "v$VERSION"
