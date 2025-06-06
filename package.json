@@ -2,14 +2,13 @@
   "name": "@bussin/utilities",
   "version": "0.0.0",
   "description": "Helpful utilities, models, types, errors, and more.",
+  "author": "wesley.thorsen@gmail.com",
+  "license": "MIT",
   "private": false,
   "repository": {
     "type": "github",
     "url": "https://github.com/wesleythorsen1/utilities"
   },
-  "main": "./dist-cjs/index.js",
-  "module": "./dist-es/index.js",
-  "types": "./dist-types/index.d.ts",
   "keywords": [
     "utilities",
     "helpers",
@@ -18,14 +17,21 @@
     "types",
     "errors"
   ],
-  "author": "wesley.thorsen@gmail.com",
-  "license": "MIT",
-  "workspaces": [
-    "lib/*"
-  ],
   "files": [
     "dist-*/**"
   ],
+  "exports": {
+    "./uuid": {
+      "import": "./dist-es/uuid/index.js",
+      "require": "./dist-cjs/uuid/index.js",
+      "types": "./dist-types/uuid/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist-es/types/index.js",
+      "require": "./dist-cjs/types/index.js",
+      "types": "./dist-types/types/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "npm run clean && npm ci && concurrently 'npm:build:cjs' 'npm:build:es' 'npm:build:types'",
     "build:cjs": "tsc -p tsconfig.cjs.json && tsc-alias",
