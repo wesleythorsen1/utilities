@@ -3,15 +3,22 @@ name: Manual Release Dispatcher
 permissions:
   contents: write
 
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: 'Semver version to release (e.g. 1.2.3 or 1.2.3-beta.1)'
+#         required: true
+
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semver version to release (e.g. 1.2.3 or 1.2.3-beta.1)'
+        description: 'use "Create Release & Publish" instead'
         required: true
 
 jobs:
-  tag_and_build:
+  validate_and_tag:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
