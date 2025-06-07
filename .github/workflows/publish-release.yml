@@ -1,9 +1,16 @@
-name: Release & Publish
+name: Create Release & Publish to NPM
+
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      deprecated:
+        description: 'use "Create Release & Publish" instead'
+        required: true
 
 permissions:
   contents: write
