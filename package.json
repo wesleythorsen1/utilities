@@ -40,7 +40,7 @@
     "clean": "rimraf ./dist-* && rimraf *.tsbuildinfo",
     "lint": "eslint --fix */**/*.ts && prettier --write */**/*.ts",
     "test": "jest",
-    "release": "gh workflow run release-dispatch.yml -f version=$npm_config_version"
+    "release": "gh workflow run release-dispatch.yml -f"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
