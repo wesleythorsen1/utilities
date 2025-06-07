@@ -2,7 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@bussin/utilities)](https://npmjs.com/package/@bussin/utilities) [![NPM Version](https://img.shields.io/npm/dw/@bussin/utilities)](https://npmjs.com/package/@bussin/utilities) [![NPM Version](https://img.shields.io/bundlephobia/min/@bussin/utilities)](https://npmjs.com/package/@bussin/utilities)
 
-Helpful utilities, models, types, errors, and more.
+Core TypeScript utilities, types, models, and error-classes shared across all @bussin modules.
 
 License: [MIT](https://opensource.org/licenses/MIT)
 
@@ -24,4 +24,4 @@ const obj: JsonObject = {
 
 ## Support
 
-Please create a PR if you find any missing functionality that you's like to add. For bugs, please use the [issues tracker](https://github.com/wesleythorsen1/utilities/issues). I'll be happy to help you!
+Please create a PR if you find any missing functionality that you's like to add. For bugs, please use the [issues tracker](https://github.com/wesleythorsen1/utilities/issues). I'd be happy to help you!
