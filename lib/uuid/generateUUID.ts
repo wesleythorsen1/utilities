@@ -1,6 +1,6 @@
 import { getRandomValues } from 'node:crypto';
 
-export function generateUuid() {
+export function generateUUID() {
   // Generate 16 random bytes
   const bytes = new Uint8Array(16);
   getRandomValues(bytes);

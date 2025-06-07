@@ -1,4 +1,4 @@
-import { generateUuid } from '@bussin/utilities/uuid';
+import { generateUUID } from '@bussin/utilities/uuid';
 import { JsonObject } from '@bussin/utilities/types';
 
 const run = async () => {
@@ -15,7 +15,7 @@ const run = async () => {
       },
     };
 
-    const uuid = generateUuid();
+    const uuid = generateUUID();
 
     console.log(uuid);
   } catch (error) {
