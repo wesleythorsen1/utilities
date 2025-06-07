@@ -13,11 +13,11 @@ License: [MIT](https://opensource.org/licenses/MIT)
 ## Quick Start
 
 ```TypeScript
-import { generateUuid } from '@bussin/utilities/uuid';
+import { generateUUID } from '@bussin/utilities/uuid';
 import { JsonObject } from '@bussin/utilities/types';
 
 const obj: JsonObject = {
-    id: generateUuid(),
+    id: generateUUID(),
 };
 
 ```
