@@ -121,7 +121,7 @@ jobs:
     name: Publish to NPM
     needs: build_and_create_draft_release
     runs-on: ubuntu-latest
-    environment: release # this line causes a manual approval to be required
+    environment: release
 
     steps:
       - name: Download build artifacts
@@ -129,6 +129,9 @@ jobs:
         with:
           name: package-artifacts
           path: ./
+
+      - name: Verify local directory contents
+        run: ls -la
 
       - name: Set up Node.js & NPM
         uses: actions/setup-node@v3
