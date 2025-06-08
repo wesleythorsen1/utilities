@@ -1,0 +1,22 @@
+name: Test semver action steps
+run-name: Test '${{ inputs.version }}' - @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: Version (semver)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.CONTENTS_WRITE_TOKEN }}
