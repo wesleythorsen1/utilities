@@ -39,8 +39,7 @@
     "build:types": "tsc -p tsconfig.types.json && tsc-alias",
     "clean": "rimraf ./dist-* && rimraf *.tsbuildinfo",
     "lint": "eslint --fix */**/*.ts && prettier --write */**/*.ts",
-    "test": "jest",
-    "release": "gh workflow run create-release-and-publish.yml -f"
+    "test": "jest"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
