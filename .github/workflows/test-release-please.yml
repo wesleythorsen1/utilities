@@ -1,23 +1,51 @@
-name: Test release please action
-run-name: Test '${{ inputs.version }}' - @${{ github.actor }}
+name: Release Please
+# run-name: Begin '${{ inputs.version }}' Release - @${{ github.actor }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        required: true
-        type: string
-        description: Version (semver)
+  push:
+    branches:
+      - develop
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  release-please:
+  release:
     runs-on: ubuntu-latest
+    environment: release
+
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release-please
         with:
           token: ${{ secrets.CONTENTS_WRITE_TOKEN }}
           target-branch: ${{ github.ref_name }}
+
+      # if release created:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        if: ${{ steps.release-please.outputs.release_created }}
+
+      - name: Set up Node.js & NPM
+        uses: actions/setup-node@v3
+        if: ${{ steps.release-please.outputs.release_created }}
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+          scope: '@bussin'
+          always-auth: true
+
+      - name: Install dependencies and build
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publish to NPM
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: |
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
