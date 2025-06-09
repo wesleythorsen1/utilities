@@ -1,6 +1,6 @@
 {
   "name": "@bussin/utilities",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Core TypeScript utilities, types, models, and error-classes shared across all @bussin modules.",
   "author": "wesley.thorsen@gmail.com",
   "license": "MIT",
