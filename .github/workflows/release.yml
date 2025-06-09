@@ -24,7 +24,6 @@ jobs:
           fetch-depth: 0
 
       - name: Add prerelease config
-        # if: ${{ !startsWith(github.ref_name, 'develop') || !startsWith('develop', github.ref_name) }}
         if: ${{ github.ref_name != 'develop' }}
         env:
           BRANCH: ${{ github.ref_name }}
@@ -37,7 +36,6 @@ jobs:
           cat $CONFIG
 
       - name: Remove prerelease config
-        # if: ${{ startsWith(github.ref_name, 'develop') && startsWith('develop', github.ref_name) }}
         if: ${{ github.ref_name == 'develop' }}
         env:
           CONFIG: '.github/release-please-config.json'
