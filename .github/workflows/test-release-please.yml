@@ -1,5 +1,4 @@
-name: Release Please
-# run-name: Begin '${{ inputs.version }}' Release - @${{ github.actor }}
+name: Release
 
 on:
   push:
@@ -11,9 +10,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  release:
+  release-please:
     runs-on: ubuntu-latest
-    environment: release
+
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      tag_name: ${{ steps.release-please.outputs.tag_name }}
 
     steps:
       - uses: googleapis/release-please-action@v4
@@ -22,15 +24,18 @@ jobs:
           token: ${{ secrets.CONTENTS_WRITE_TOKEN }}
           target-branch: ${{ github.ref_name }}
 
-      # if release created:
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    environment: release
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        if: ${{ steps.release-please.outputs.release_created }}
 
       - name: Set up Node.js & NPM
         uses: actions/setup-node@v3
-        if: ${{ steps.release-please.outputs.release_created }}
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
@@ -38,14 +43,17 @@ jobs:
           always-auth: true
 
       - name: Install dependencies and build
-        if: ${{ steps.release-please.outputs.release_created }}
         run: |
           npm ci
           npm run build
 
       - name: Publish to NPM
-        if: ${{ steps.release-please.outputs.release_created }}
         run: |
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish GitHub Release
+        run: gh release edit ${{ needs.release-please.outputs.tag_name }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
