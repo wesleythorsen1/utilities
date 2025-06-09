@@ -1,10 +1,18 @@
 name: Build and Publish
 run-name: Build and Publish → ${{ github.ref_name }} - @${{ github.actor }}
 
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'
+
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: Version (semver)
 
 permissions:
   contents: write
